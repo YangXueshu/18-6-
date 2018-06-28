@@ -1,0 +1,27 @@
+<body>
+    {% for msg in messages %}
+        <div class="{{ msg.tags }}">{{ msg }}</div>
+    {% endfor %}
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit">
+    </form>
+    </body>
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Author Create</title>
+        <style>
+            body{
+                padding: 10px 100px;
+                background-color: #c4dce8;
+            }
+            .success{
+                background-color: #79aec8;
+                padding: 10px;
+                color: #ffffff;
+            }
+        </style>
+    </head>

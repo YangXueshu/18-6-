@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Sign System</title>
+    <script src='{% static "js/jquery-3.3.1.min.js" %}'></script>
+</head>
+<style>
+     body {
+            background-color: #609ab6;
+
+        }
+    a:link {
+         color:#FF0000;
+         text-decoration:underline;
+    }
+</style>
+<body>
+<h1 style ='margin-left:563px; margin-top:85px;color:white;font-weight:bolder;font-family:Arial, Helvetica, sans-serif;
+font-size:50px;' >Student Sign System</h1>
+
+
+
+    <video id="v" style="width: 628px;height:738px;float:left;margin-left:120px;margin-top:-35px"></video>
+    <div style="float:right;position:absolute;left:960px;top:210px;">
+            <h3>欢迎使用 ‘校脸’ 识别系统</h3>
+            <p>请将人脸对准摄像头按下‘拍照’按钮</p>
+            <button id="take">拍照</button>
+            <p>请尽量保证背景整洁</p>
+            <p>若识别有误，请点击<a href=''>这里</a>进行校正</p>
+            <p>若预览效果满意 请点击这里进行<a href="{% url 'pred' %} "> 预测</a></p>  
+            <h3>预览效果</h3>
+        </div>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <div style="position:absolute;left:960px;top:455px;">
+    <img src="http://placehold.it/640&text=Your%20image%20here%20..." id="photo" alt="photo" style="width:420px;height:320px;">
+    </div>
+    <p><a  href="{% url 'index' %} " color ='red'>管理员登陆</a></p>
+    
+    <script>
+
+        !(function () {
+            // 老的浏览器可能根本没有实现 mediaDevices，所以我们可以先设置一个空的对象
+            if (navigator.mediaDevices === undefined) {
+                navigator.mediaDevices = {};
+            }
+            if (navigator.mediaDevices.getUserMedia === undefined) {
+                navigator.mediaDevices.getUserMedia = function (constraints) {
+                    // 首先，如果有getUserMedia的话，就获得它
+                    var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+
+                    // 一些浏览器根本没实现它 - 那么就返回一个error到promise的reject来保持一个统一的接口
+                    if (!getUserMedia) {
+                        return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+                    }
+
+                    // 否则，为老的navigator.getUserMedia方法包裹一个Promise
+                    return new Promise(function (resolve, reject) {
+                        getUserMedia.call(navigator, constraints, resolve, reject);
+                    });
+                }
+            }
+            const constraints = {
+                video: true,
+                audio: false
+            };
+            let videoPlaying = false;
+            let v = document.getElementById('v');
+            let promise = navigator.mediaDevices.getUserMedia(constraints);
+            promise.then(stream => {
+                // 旧的浏览器可能没有srcObject
+                if ("srcObject" in v) {
+                    v.srcObject = stream;
+                } else {
+                    // 防止再新的浏览器里使用它，应为它已经不再支持了
+                    v.src = window.URL.createObjectURL(stream);
+                }
+                v.onloadedmetadata = function (e) {
+                    v.play();
+                    videoPlaying = true;
+                };
+            }).catch(err => {
+                console.error(err.name + ": " + err.message);
+            })
+
+
+            document.getElementById('take').addEventListener('click', function () {
+                if (videoPlaying) {
+                    let canvas = document.getElementById('canvas');
+                    canvas.width = v.videoWidth;
+                    canvas.height = v.videoHeight;
+                    canvas.getContext('2d').drawImage(v, 0, 0);
+                    let data = canvas.toDataURL('image/webp');       
+                    document.getElementById('photo').setAttribute('src', data);
+                    $.post("{% url 'pred' %}", {'img': data}, function (result) {
+                        console.log('result');
+                    });
+                    ; 
+                }
+            }, false);
+        })();
+    </script>
+
+
+</body>
+</html>

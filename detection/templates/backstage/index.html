@@ -1,0 +1,47 @@
+<body>
+    <div class="title">Management Login System</div>
+    <div class="login">
+      <form method="post">
+        {% csrf_token %}
+        <p style="height: 15px">
+          {% for msg in messages %}
+          <span class="{{ msg.tags }}">{{ msg }}</span>
+          {% endfor %}
+        </p>
+        <p>
+          <label>Username:</label>
+          <input type="text" name="username">
+        </p>
+        <p>
+          <label>Password:</label>
+          <input type="password" name="password">
+        </p>
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+    </body>
+
+    <style>
+        body {
+            background-color: #609ab6;
+            text-align: center;
+        }
+        .title {
+            margin-top: 60px;
+            color: #fff;
+            font-size: 54px;
+            font-weight: bold;
+        }
+        .login {
+            text-align: center;
+            margin: 15% auto;
+            background-color: #fff;
+            border-radius: 5px;
+            width: 300px;
+            height: 150px;
+            padding: 10px;
+        }
+        .error {
+            color: #ff0000;
+        }
+    </style>

@@ -1,0 +1,100 @@
+<!-- <!DOCTYPE html>
+<html lang=“en”>
+<head>
+    <meta charset=“UTF-8”>
+    <title>Student List</title>
+</head>
+<body style=“width: 80%”>
+<div style=“text-align: center”><h1>Student List</h1></div>
+{% for obj in object_list %}
+    <a href="{% url 'student_detail' id=obj.id %}">    
+    <span style="font-size: 20px;
+                 font-weight: bold">
+       {{ obj.name }}</span>
+       
+       <span>--{{ obj.s_id}}</span>
+
+       {% for j in obj.s_curriculum.all %}
+        <span>--{{ j }}</span>
+       {% endfor %}<br>
+{% endfor %}
+</body>
+</html> -->
+<body>
+    <div class="head">Library Management System</div>
+    <div>
+        <div style="padding: 10px 0">
+            {% if user.is_superuser %}
+            <a href="{% url 'create_student' %}" class="btn">New Student</a>
+            <a href="{% url 'create_project' %}" class="btn">New Project</a>
+            {% endif %}
+        </div>
+
+        <table style="width: 100%">
+            <tr style="background-color: #c4dce8">
+                <th>Name</th>
+                <th>s_class</th>
+                <th>s_id</th>
+                <th>s_grade</th>
+                <th>s_photo</th>
+                <th>s_curriculum</th>
+                
+                <th>student option</th>
+                <th>project option</th>
+                
+
+            </tr>
+            {% for student in object_list %}
+                <tr>
+                <td>{{ student.name }}</td>
+                <td>{{ student.s_class }}</td>
+                <td>{{ student.s_id }}</td>
+                <td>{{ student.s_grade }}</td>
+                <td><img src="{{student.s_photo.url }}" style="width:150px;height:200px;"/></td>
+                <td>{% for j in student.s_curriculum.all %}<span>--{{ j }}</span>{% endfor %}<br></td>
+                {% if user.is_superuser %}
+                <td><a href="{% url 'update_student'  pk=student.id %}">Edit</a>
+                    <a href="{% url 'delete_student'  pk=student.id %}">Delete</a></td>
+                <td><a href="{% url 'update_project'  pk=student.id %}">Edit</a>
+                    <a href="{% url 'delete_project'  pk=student.id %}">Delete</a></td>
+                {% else %}
+                
+                    {% if user.username == student.name  %}
+                    <td><a href="{% url 'update_student'  pk=student.id %}">Edit</a>
+                        <a href="{% url 'delete_student'  pk=student.id %}">Delete</a></td>
+                    <td>无权改动</td>
+                    {% else %}
+                    <td>无权改动</td>
+                    <td>无权改动</td>
+     
+                    {% endif %}
+                {% endif %}
+                
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    </body>
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Library Management System</title>
+        <style>
+        .head{
+            padding: 20px 0;
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            background-color: #79aec8;
+        }
+        .btn{
+            background-color: cadetblue;
+            color: #ffffff;
+            padding: 5px;
+        }
+        .btn:link{
+            text-decoration: none;
+        }
+    </style>
+    </head>
